@@ -1,6 +1,7 @@
+// lib/server/login.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uas/landingPage.dart'; // Ganti dengan nama file home screen Anda
+import 'package:uas/landingPage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -8,72 +9,96 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login Aplikasi Jual Beli Mobil'),
-        backgroundColor: Color.fromRGBO(225, 176, 29, 1),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _usernameController,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'Username',
-                labelStyle:
-                    TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: const Color.fromARGB(
-                          255, 255, 255, 255)), // Warna border saat focus
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueGrey[800]!, Colors.blueGrey[900]!],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Welcome Back',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              ),
-            ),
-            TextField(
-              controller: _passwordController,
-              style: TextStyle(color: Colors.white),
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                labelStyle:
-                    TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: const Color.fromARGB(
-                          255, 255, 255, 255)), // Warna border saat focus
+                SizedBox(height: 10),
+                Text(
+                  'Login to continue',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[300],
+                  ),
                 ),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              ),
+                SizedBox(height: 50),
+                _buildTextField(
+                    controller: _usernameController,
+                    hintText: 'Username',
+                    icon: Icons.person_outline),
+                SizedBox(height: 20),
+                _buildTextField(
+                    controller: _passwordController,
+                    hintText: 'Password',
+                    icon: Icons.lock_outline,
+                    obscureText: true),
+                SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: _login,
+                  child: Text('Login'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _login();
-              },
-              child: Text(
-                'Login',
-                style: TextStyle(color: Colors.amber),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black26,
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
-      backgroundColor: Color.fromARGB(255, 32, 32, 32),
+    );
+  }
+
+  Widget _buildTextField(
+      {required TextEditingController controller,
+      required String hintText,
+      required IconData icon,
+      bool obscureText = false}) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: TextField(
+          controller: controller,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+            icon: Icon(icon, color: Colors.blueGrey),
+            hintText: hintText,
+            border: InputBorder.none,
+          ),
+        ),
+      ),
     );
   }
 
@@ -117,3 +142,4 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 //Mohamad Ilham Ramadhani - A11.2022.14587
+

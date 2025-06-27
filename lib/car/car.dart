@@ -1,10 +1,11 @@
+// lib/car/car.dart
 class Car {
   int? id;
   String judul;
   String harga;
   String nomer;
   String desc;
-  String gambar;
+  List<String> gambar; // Diubah menjadi List<String>
 
   Car({
     this.id,
@@ -22,9 +23,19 @@ class Car {
       'harga': harga,
       'nomer': nomer,
       'desc': desc,
-      'gambar': gambar,
+      'gambar': gambar.join('|||'), // Gabungkan dengan pemisah unik
     };
   }
-}
 
-//Mohamad Ilham Ramadhani - A11.2022.14587
+  factory Car.fromMap(Map<String, dynamic> map) {
+    String gambarString = map['gambar'] ?? '';
+    return Car(
+      id: map['id'],
+      judul: map['judul'] ?? '',
+      harga: map['harga'] ?? '',
+      nomer: map['nomer'] ?? '',
+      desc: map['desc'] ?? '',
+      gambar: gambarString.isNotEmpty ? gambarString.split('|||') : [],
+    );
+  }
+}

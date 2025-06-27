@@ -1,27 +1,16 @@
+// lib/main.dart
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqlite_api.dart';
-import 'package:uas/server/login.dart';
-import 'package:sqflite/sqflite.dart' as sqflite;
+import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:uas/server/login.dart';
 
-void main() async {
-  sqflite.databaseFactory = databaseFactoryFfiWeb;
-
-  WidgetsFlutterBinding.ensureInitialized();
-  await sqflite.openDatabase('car_database.db', version: 1,
-      onCreate: (Database db, int version) async {
-    // Buat tabel atau lakukan inisialisasi lainnya di sini
-    await db.execute('''
-          CREATE TABLE cars (
-            id INTEGER,
-            judul TEXT,
-            harga TEXT,
-            nomer TEXT,
-            desc TEXT,
-            gambar TEXT
-          )
-        ''');
-  });
+void main() {
+  // Hanya inisialisasi FFI untuk platform web.
+  // Ini tidak akan berpengaruh pada build iOS.
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
   runApp(MyApp());
 }
 
@@ -29,13 +18,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Aplikasi Jual Beli Mobil',
+      title: 'Luxury Cars Showroom',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.blueGrey,
+        scaffoldBackgroundColor: Colors.grey[100],
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.blueGrey[800],
+          elevation: 0,
+        ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: LoginPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
-
-//Mohamad Ilham Ramadhani - A11.2022.14587

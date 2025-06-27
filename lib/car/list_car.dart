@@ -1,98 +1,121 @@
+// lib/car/list_car.dart
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:uas/car/car.dart';
 import 'package:uas/car/detail_car.dart';
 
-class ListItem extends StatelessWidget {
-  final String judul;
-  final String harga;
-  final String desing;
-  final String desc;
-  final String gambar;
+// Fungsi untuk memformat harga menjadi format Rupiah
+String _formatHarga(String harga) {
+  try {
+    // Menghapus semua karakter non-numerik
+    final number = int.parse(harga.replaceAll(RegExp(r'[^0-9]'), ''));
+    // Regex untuk menambahkan titik sebagai pemisah ribuan
+    final RegExp regExp = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    final String Function(Match) mathFunc = (Match match) => '${match[1]}.';
+    return 'Rp ' + number.toString().replaceAllMapped(regExp, mathFunc);
+  } catch (e) {
+    // Jika harga tidak bisa di-parse, kembalikan teks aslinya
+    return harga;
+  }
+}
 
-  const ListItem({
-    Key? key,
-    required this.judul,
-    required this.harga,
-    required this.desing,
-    required this.desc,
-    required this.gambar,
-  }) : super(key: key);
+// Widget untuk menampilkan gambar pertama dari list
+Widget _buildCarImage(List<String> images) {
+  // Cek jika list gambar kosong atau string gambar pertama kosong
+  if (images.isEmpty || images.first.isEmpty) {
+    return Container(
+      width: 100,
+      height: 100,
+      color: Colors.grey[200],
+      child: Icon(Icons.directions_car, size: 50, color: Colors.grey[400]),
+    );
+  }
+  
+  try {
+    // Decode gambar pertama dari base64
+    Uint8List bytes = base64Decode(images.first);
+    return Image.memory(
+      bytes,
+      width: 100,
+      height: 100,
+      fit: BoxFit.cover,
+    );
+  } catch (e) {
+    // Fallback jika terjadi error saat decoding
+    return Container(
+      width: 100,
+      height: 100,
+      color: Colors.grey[200],
+      child: Icon(Icons.broken_image, size: 50, color: Colors.grey[400]),
+    );
+  }
+}
+
+class ListItem extends StatelessWidget {
+  final Car car;
+  final VoidCallback onDataChanged;
+
+  const ListItem({Key? key, required this.car, required this.onDataChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
+    return Card(
+      elevation: 6,
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      clipBehavior: Clip.antiAlias, // Memastikan InkWell tidak keluar dari border radius
+      child: InkWell(
+        onTap: () async {
+          final result = await Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => DetailPage(
-                      judul: judul,
-                      harga: harga,
-                      desing: desing,
-                      desc: desc,
-                      gambar: gambar,
-                    )));
-      },
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-            color: Color.fromARGB(255, 201, 127, 58),
-            borderRadius: BorderRadius.all(Radius.circular(25)),
-            boxShadow: [
-              BoxShadow(
-                color: Color.fromARGB(255, 139, 97, 41),
-                offset: Offset(3.0, 5.0),
-                blurRadius: 2.0,
+            MaterialPageRoute(builder: (context) => DetailPage(car: car)),
+          );
+          // Jika ada perubahan (edit/delete) dari halaman detail, refresh list
+          if (result == true) {
+            onDataChanged();
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: _buildCarImage(car.gambar),
               ),
-            ]),
-        height: 110,
-        padding: EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 10,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.network(
-              gambar,
-              width: 75,
-              height: 75,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  judul,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
+              SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      car.judul,
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 5),
+                    // --- PERUBAHAN DI SINI ---
+                    Text(
+                      _formatHarga(car.harga), // Terapkan fungsi format di sini
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.red[700],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    // Tidak menampilkan nomor telepon di list agar lebih ringkas
+                  ],
                 ),
-                Text(
-                  harga,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 106, 23, 23),
-                  ),
-                ),
-                Text(
-                  desing,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color.fromRGBO(28, 156, 17, 1),
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            )
-          ],
+              ),
+              Icon(Icons.chevron_right, color: Colors.grey[400]),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
-//Mohamad Ilham Ramadhani - A11.2022.14587

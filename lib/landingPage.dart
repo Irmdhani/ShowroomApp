@@ -1,3 +1,4 @@
+// lib/landingPage.dart
 import 'package:flutter/material.dart';
 import 'package:uas/car/home_page.dart';
 import 'package:uas/car/jual.dart';
@@ -11,15 +12,24 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
+  // Daftar halaman yang akan ditampilkan
+  final List<Widget> _pages = [
+    HomePage(),
+    Jual(),
+    Profile(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Luxury Cars Showroom'),
-        backgroundColor: Color.fromRGBO(225, 176, 29, 1),
+        backgroundColor: Colors.blueGrey[800], // Warna primer konsisten
+        elevation: 0,
       ),
-      body: _buildPage(_currentIndex),
-      backgroundColor: Color.fromARGB(255, 32, 32, 32),
+      // Body akan menampilkan halaman sesuai index yang dipilih
+      body: _pages[_currentIndex],
+      backgroundColor: Colors.grey[100], // Latar belakang utama
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -27,37 +37,28 @@ class _MyHomePageState extends State<MyHomePage> {
             _currentIndex = index;
           });
         },
-        backgroundColor: Color.fromRGBO(225, 176, 29, 1),
+        selectedItemColor: Colors.amber[800], // Warna aksen untuk item aktif
+        unselectedItemColor: Colors.blueGrey[600],
+        backgroundColor: Colors.white, // Latar belakang navigasi
+        type: BottomNavigationBarType.fixed, // Agar label selalu terlihat
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.car_rental),
+            icon: Icon(Icons.directions_car_outlined),
+            activeIcon: Icon(Icons.directions_car),
             label: 'Cars',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.sell),
+            icon: Icon(Icons.add_circle_outline),
+            activeIcon: Icon(Icons.add_circle),
             label: 'Jual',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
       ),
     );
   }
-
-  Widget _buildPage(int index) {
-    switch (index) {
-      case 0:
-        return HomePage();
-      case 1:
-        return AddItem();
-      case 2:
-        return Profile();
-      default:
-        return Container(); // Return a default empty container if index is out of bounds.
-    }
-  }
 }
-
-//Mohamad Ilham Ramadhani - A11.2022.14587
